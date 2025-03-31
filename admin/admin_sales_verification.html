@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Sales Verification - Money Krishna Education</title>
+    <style>
+        :root {
+            --primary-color: #2563eb;
+            --primary-hover: #1d4ed8;
+            --background: #f8fafc;
+            --sidebar: #1e293b;
+            --sidebar-hover: #334155;
+            --text-primary: #1f2937;
+            --text-secondary: #64748b;
+            --card-bg: #ffffff;
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #dc3545;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+        }
+
+        /* Main Content Styles (Modified to remove sidebar dependency) */
+        .main-content {
+            padding: 2rem;
+            width: 100%; /* Full width since sidebar is removed */
+        }
+
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .header-title h1 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .header-title p {
+            color: var(--text-secondary);
+            margin-top: 0.25rem;
+        }
+
+        .profile-section {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            position: relative;
+        }
+
+        .profile-info {
+            text-align: right;
+        }
+
+        .profile-name {
+            font-weight: 500;
+            color: var(--text-primary);
+        }
+
+        .profile-role {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .profile-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary-color);
+            color: white;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 500;
+            cursor: pointer;
+        }
+
+        .profile-dropdown {
+            position: absolute;
+            top: 100%;
+            right: 0;
+            margin-top: 0.5rem;
+            background: white;
+            border-radius: 0.5rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            min-width: 200px;
+            display: none;
+            z-index: 100;
+        }
+
+        .profile-dropdown.show {
+            display: block;
+        }
+
+        .dropdown-item {
+            padding: 0.75rem 1rem;
+            color: var(--text-primary);
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            transition: background-color 0.2s ease;
+        }
+
+        .dropdown-item:hover {
+            background-color: #f8fafc;
+        }
+
+        /* Sale Verification Styles */
+        .sale-verification-container {
+            background: var(--card-bg);
+            border-radius: 1rem;
+            padding: 1.5rem;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            margin-bottom: 1.5rem;
+        }
+
+        .sale-verification-container h2 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .lead-details-container {
+            margin-bottom: 1.5rem;
+        }
+
+        .lead-details-container h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .lead-details-container p {
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .form-group img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 0.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .btn-verify {
+            padding: 0.75rem 1.5rem;
+            border-radius: 0.5rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            border: none;
+            background: var(--success);
+            color: white;
+        }
+
+        .btn-verify:hover {
+            background: #198754;
+        }
+
+        /* Responsive Styles (Modified to remove sidebar dependency) */
+        @media (max-width: 768px) {
+            .header {
+                flex-direction: column;
+                gap: 1rem;
+                text-align: center;
+            }
+
+            .profile-section {
+                width: 100%;
+                justify-content: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Main Content (Modified to remove sidebar dependency) -->
+    <main class="main-content">
+        <div class="header">
+            <div class="header-title">
+                <h1>Admin Sales Verification</h1>
+                <p>Verify sales details and images</p>
+            </div>
+            <div class="profile-section">
+                <div class="profile-info">
+                    <div class="profile-name" id="profileName">Loading...</div>
+                    <div class="profile-role">Admin</div>
+                </div>
+                <div class="profile-avatar" id="profileAvatar" onclick="toggleDropdown()">A</div>
+                <div class="profile-dropdown">
+                    <a href="../profile.html" class="dropdown-item">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                        </svg>
+                        <span>Profile</span>
+                    </a>
+                    <a href="#" class="dropdown-item" onclick="logout()">
+                        <svg class="icon" viewBox="0 0 24 24">
+                            <path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/>
+                        </svg>
+                        <span>Logout</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+
+        <div class="sale-verification-container">
+            <h2>Sale Verification</h2>
+            <div class="lead-details-container">
+                <h3>Lead Information</h3>
+                <p><strong>Name:</strong> <span id="leadName"></span></p>
+                <p><strong>Email:</strong> <span id="leadEmail"></span></p>
+                <p><strong>Phone:</strong> <span id="leadPhone"></span></p>
+                <p><strong>City:</strong> <span id="leadCity"></span></p>
+                <p><strong>Training View ID:</strong> <span id="trainingViewId"></span></p>
+            </div>
+
+            <div class="form-group">
+                <label for="saleImage">Uploaded Image:</label>
+                <img id="saleImage" src="" alt="Sale Image">
+            </div>
+
+            <button class="btn-verify" onclick="verifySale()">Verify and Complete</button>
+        </div>
+    </main>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const leadId = urlParams.get('leadId');
+
+        async function loadLeadDetails() {
+            try {
+                const token = localStorage.getItem('jwt_token');
+                if (!token) {
+                    console.error('No token found');
+                    window.location.href = '../index.html';
+                    return;
+                }
+
+                const response = await fetch(`https://backend-85dy.onrender.com/leads/${leadId}`, {
+                    method: 'GET',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    console.error('Failed to fetch lead details:', response.status);
+                    return;
+                }
+
+                const lead = await response.json();
+
+                document.getElementById('leadName').textContent = lead.full_name || lead.name || 'N/A';
+                document.getElementById('leadEmail').textContent = lead.email || 'N/A';
+                document.getElementById('leadPhone').textContent = lead.phone_number || lead.phone || 'N/A';
+                document.getElementById('leadCity').textContent = lead.city || 'N/A';
+                document.getElementById('trainingViewId').textContent = lead.training_view_id || 'N/A';
+
+                // Load the image if available
+                if (lead.sale_image) {
+                    document.getElementById('saleImage').src = lead.sale_image;
+                } else {
+                    document.getElementById('saleImage').alt = 'No image uploaded';
+                }
+            } catch (error) {
+                console.error('Error loading lead details:', error);
+            }
+        }
+
+        async function verifySale() {
+            try {
+                const token = localStorage.getItem('jwt_token');
+                if (!token) {
+                    console.error('No token found');
+                    window.location.href = '../index.html';
+                    return;
+                }
+
+                const response = await fetch(`https://backend-85dy.onrender.com/leads/${leadId}/complete`, {
+                    method: 'PUT',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    }
+                });
+
+                if (!response.ok) {
+                    console.error('Failed to complete sale:', response.status);
+                    alert('Failed to complete sale. Please try again.');
+                    return;
+                }
+
+                alert('Sale verified and completed successfully!');
+                // Optionally, redirect back to the sales list or another appropriate page
+            } catch (error) {
+                console.error('Error completing sale:', error);
+                alert('An error occurred while completing the sale.');
+            }
+        }
+
+        function logout() {
+            localStorage.clear();
+            window.location.href = '../index.html';
+        }
+
+        function toggleDropdown() {
+            const dropdown = document.querySelector('.profile-dropdown');
+            dropdown.classList.toggle('show');
+        }
+
+        // Close dropdown when clicking outside
+        document.addEventListener('click', function(event) {
+            const dropdown = document.querySelector('.profile-dropdown');
+            const profileSection = document.querySelector('.profile-section');
+            
+            if (!profileSection.contains(event.target) && dropdown.classList.contains('show')) {
+                dropdown.classList.remove('show');
+            }
+        });
+
+        async function fetchProfileName() {
+            const token = localStorage.getItem('jwt_token');
+            if (!token) {
+                console.warn('No JWT token found. Redirecting to login.');
+                window.location.href = '../index.html';
+                return;
+            }
+
+            let userData = localStorage.getItem('userData');
+            if (!userData) {
+                try {
+                    const response = await fetch('https://backend-85dy.onrender.com/profile', {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        console.error('Failed to fetch profile data:', response.status);
+                        document.getElementById('profileName').textContent = 'N/A';
+                        return;
+                    }
+
+                    const profileData = await response.json();
+                    userData = JSON.stringify(profileData);
+                    localStorage.setItem('userData', userData);
+                } catch (error) {
+                    console.error('Error fetching profile data:', error);
+                    document.getElementById('profileName').textContent = 'N/A';
+                    return;
+                }
+            }
+
+            if (userData) {
+                try {
+                    const user = JSON.parse(userData);
+                    document.getElementById('profileName').textContent = user.name || 'N/A';
+                } catch (error) {
+                    console.error('Error parsing userData:', error);
+                    document.getElementById('profileName').textContent = 'N/A';
+                }
+            } else {
+                console.warn('No user data found in local storage.');
+                document.getElementById('profileName').textContent = 'N/A';
+            }
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            fetchProfileName();
+            loadLeadDetails();
+        });
+    </script>
+</body>
+</html>

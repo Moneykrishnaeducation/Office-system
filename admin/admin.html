@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Monitor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        video {
+            border: 1px solid black;
+            width: 80%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>Screen Share View</h1>
+    <video id="videoElement" autoplay></video>
+
+    <script>
+        const videoElement = document.getElementById('videoElement');
+        const signalingServer = new WebSocket('ws://localhost:8080');
+        let peerConnection;
+
+        signalingServer.onmessage = async (message) => {
+            const data = JSON.parse(message.data);
+            if (data.offer) {
+                peerConnection = new RTCPeerConnection();
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.offer));
+
+                const answer = await peerConnection.createAnswer();
+                await peerConnection.setLocalDescription(answer);
+                signalingServer.send(JSON.stringify({ answer: answer }));
+
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        signalingServer.send(JSON.stringify({ candidate: event.candidate }));
+                    }
+                };
+
+                peerConnection.ontrack = (event) => {
+                    videoElement.srcObject = event.streams[0];
+                };
+            } else if (data.candidate) {
+                await peerConnection.addIceCandidate(new RTCIceCandidate(data.candidate));
+            }
+        };
+    </script>
+</body>
+</html>

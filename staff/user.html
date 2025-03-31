@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>User Screen Share</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            text-align: center;
+        }
+        video {
+            border: 1px solid black;
+            width: 80%;
+            height: auto;
+        }
+    </style>
+</head>
+<body>
+    <h1>User Screen Share</h1>
+    <video id="videoElement" autoplay></video>
+
+    <script>
+        const videoElement = document.getElementById('videoElement');
+        const signalingServer = new WebSocket('ws://localhost:8080');
+        let peerConnection;
+
+        async function startScreenShare() {
+            try {
+                const stream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { mediaSource: "screen" }, // Automatically share the entire screen
+                    audio: true
+                });
+                videoElement.srcObject = stream;
+
+                peerConnection = new RTCPeerConnection();
+                stream.getTracks().forEach(track => peerConnection.addTrack(track, stream));
+
+                const offer = await peerConnection.createOffer();
+                await peerConnection.setLocalDescription(offer);
+                signalingServer.send(JSON.stringify({ offer: offer }));
+
+                peerConnection.onicecandidate = (event) => {
+                    if (event.candidate) {
+                        signalingServer.send(JSON.stringify({ candidate: event.candidate }));
+                    }
+                };
+            } catch (error) {
+                console.error("Error starting screen share:", error);
+            }
+        }
+
+        signalingServer.onmessage = async (message) => {
+            const data = JSON.parse(message.data);
+            if (data.answer) {
+                await peerConnection.setRemoteDescription(new RTCSessionDescription(data.answer));
+            }
+        };
+
+        // Automatically start screen sharing when the page loads
+        window.onload = startScreenShare;
+    </script>
+</body>
+</html>
